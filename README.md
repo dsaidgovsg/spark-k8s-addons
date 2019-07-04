@@ -1,5 +1,7 @@
 # `spark-k8s-addons`
 
+[![Build Status](https://travis-ci.org/guangie88/spark-k8s-addons.svg?branch=master)](https://travis-ci.org/guangie88/spark-k8s-addons)
+
 Dockerfile setup to install cloud related utilities onto the standard Spark K8s
 Docker images.
 
