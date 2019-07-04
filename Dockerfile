@@ -16,7 +16,7 @@ RUN set -euo pipefail && \
     cd ${SPARK_HOME}/jars; \
     curl -LO http://central.maven.org/maven2/org/apache/hadoop/hadoop-aws/${HADOOP_VERSION}/hadoop-aws-${HADOOP_VERSION}.jar; \
     curl -LO https://sdk-for-java.amazonwebservices.com/aws-java-sdk-${AWS_JAVA_SDK_VERSION}.zip; \
-        unzip aws-java-sdk-${AWS_JAVA_SDK_VERSION}.zip; \
+        unzip -qq aws-java-sdk-${AWS_JAVA_SDK_VERSION}.zip; \
         find aws-java-sdk-${AWS_JAVA_SDK_VERSION} -name "*.jar" -exec mv {} ${SPARK_HOME}/jars/ \; ; \
         rm -r ./aws-java-sdk-${AWS_JAVA_SDK_VERSION}; \
         rm ./aws-java-sdk-${AWS_JAVA_SDK_VERSION}.zip; \
