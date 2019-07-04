@@ -1,0 +1,35 @@
+language: bash
+
+env:
+  global:
+  - DOCKER_IMAGE="guangie88/spark-k8s-addons"
+  - FROM_DOCKER_IMAGE="guangie88/spark-k8s"
+
+matrix:
+  include:
+{%- for v in c.versions %}
+  - services: docker
+    env:
+    - SPARK_VERSION={{ v.spark }}
+    - HADOOP_VERSION={{ v.hadoop }}
+    - AWS_JAVA_SDK_VERSION={{ v.aws_java_sdk }}
+{%- endfor %}
+
+script:
+- |-
+  docker build . \
+    --build-arg FROM_DOCKER_IMAGE \
+    --build-arg SPARK_VERSION=${SPARK_VERSION} \
+    --build-arg HADOOP_VERSION=${HADOOP_VERSION} \
+    --build-arg AWS_JAVA_SDK_VERSION=${AWS_JAVA_SDK_VERSION} \
+    -t "${DOCKER_IMAGE}:${SPARK_VERSION}_hadoop-${HADOOP}"
+
+deploy:
+  provider: script
+  script: bash push-images.sh
+  on:
+    branch: master
+
+branches:
+  only:
+  - master
