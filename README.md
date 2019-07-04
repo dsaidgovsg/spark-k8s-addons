@@ -22,9 +22,6 @@ The following JARs are added onto the original K8s Docker images:
 
 ### Others
 
-Both Python3 and `aws-iam-authenticator` are installed, so that AWS user can
-easily perform the Kubernetes authentication set-up.
-
 Additionally, all Alpine builds have `gcompat` and `libc6-compat` installed to
 prevent `glibc` shared library related issues.
 
