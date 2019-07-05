@@ -20,7 +20,7 @@ script:
     --build-arg SPARK_VERSION=${SPARK_VERSION} \
     --build-arg HADOOP_VERSION=${HADOOP_VERSION} \
     --build-arg AWS_JAVA_SDK_VERSION=${AWS_JAVA_SDK_VERSION} \
-    -t "${DOCKER_IMAGE}:${SPARK_VERSION}_hadoop-${HADOOP}"
+    -t "${DOCKER_IMAGE}:${SPARK_VERSION}_hadoop-${HADOOP_VERSION}"
 
 deploy:
   provider: script
