@@ -1,48 +1,48 @@
 versions:
-- spark:           2.4.3
+- spark:           2.3.0
+  hadoop:          2.7.3
+  aws_java_sdk:    1.7.4
+
+- spark:           2.3.1
+  hadoop:          2.7.3
+  aws_java_sdk:    1.7.4
+
+- spark:           2.3.2
+  hadoop:          2.7.3
+  aws_java_sdk:    1.7.4
+
+- spark:           2.3.3
+  hadoop:          2.7.3
+  aws_java_sdk:    1.7.4
+
+- spark:           2.4.0
+  hadoop:          2.7.3
+  aws_java_sdk:    1.7.4
+
+- spark:           2.4.0
   hadoop:          3.1.0
   aws_java_sdk:    1.11.271
 
-# - spark:           2.4.3
-#   hadoop:          2.7.3
-#   aws_java_sdk:    1.7.4
+- spark:           2.4.1
+  hadoop:          2.7.3
+  aws_java_sdk:    1.7.4
 
-# - spark:           2.4.2
-#   hadoop:          3.1.0
-#   aws_java_sdk:    1.11.271
+- spark:           2.4.1
+  hadoop:          3.1.0
+  aws_java_sdk:    1.11.271
 
-# - spark:           2.4.2
-#   hadoop:          2.7.3
-#   aws_java_sdk:    1.7.4
+- spark:           2.4.2
+  hadoop:          2.7.3
+  aws_java_sdk:    1.7.4
 
-# - spark:           2.4.1
-#   hadoop:          3.1.0
-#   aws_java_sdk:    1.11.271
+- spark:           2.4.2
+  hadoop:          3.1.0
+  aws_java_sdk:    1.11.271
 
-# - spark:           2.4.1
-#   hadoop:          2.7.3
-#   aws_java_sdk:    1.7.4
+- spark:           2.4.3
+  hadoop:          2.7.3
+  aws_java_sdk:    1.7.4
 
-# - spark:           2.4.0
-#   hadoop:          3.1.0
-#   aws_java_sdk:    1.11.271
-
-# - spark:           2.4.0
-#   hadoop:          2.7.3
-#   aws_java_sdk:    1.7.4
-
-# - spark:           2.3.3
-#   hadoop:          2.7.3
-#   aws_java_sdk:    1.7.4
-
-# - spark:           2.3.2
-#   hadoop:          2.7.3
-#   aws_java_sdk:    1.7.4
-
-# - spark:           2.3.1
-#   hadoop:          2.7.3
-#   aws_java_sdk:    1.7.4
-
-# - spark:           2.3.0
-#   hadoop:          2.7.3
-#   aws_java_sdk:    1.7.4
+- spark:           2.4.3
+  hadoop:          3.1.0
+  aws_java_sdk:    1.11.271
