@@ -7,6 +7,8 @@ FROM ${FROM_DOCKER_IMAGE}:${SPARK_VERSION}_hadoop-${HADOOP_VERSION}
 ARG HADOOP_VERSION=
 ARG AWS_JAVA_SDK_VERSION=
 
+USER root
+
 RUN set -euo pipefail && \
     # apt requirements
     apk add --no-cache \
@@ -41,3 +43,6 @@ RUN set -euo pipefail && \
         curl \
         ; \
     :
+
+ARG spark_uid=185
+USER ${spark_uid}
