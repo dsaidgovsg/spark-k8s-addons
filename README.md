@@ -17,6 +17,8 @@ The following JARs are added onto the original K8s Docker images:
 - AWS Hadoop SDK JAR
   - Appends `spark.hadoop.fs.s3a.impl org.apache.hadoop.fs.s3a.S3AFileSystem`
     into `spark-defaults.conf`
+- [AWS IAM Authenticator](https://github.com/kubernetes-sigs/aws-iam-authenticator)
+- [AWS CLI](https://aws.amazon.com/cli/)
 - Google Cloud Storage SDK JAR
 - MariaDB JDBC Connector JAR
 
