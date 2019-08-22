@@ -7,6 +7,8 @@ FROM ${FROM_DOCKER_IMAGE}:${SPARK_VERSION}_hadoop-${HADOOP_VERSION}
 ARG HADOOP_VERSION=
 ARG AWS_JAVA_SDK_VERSION=
 
+USER root
+
 RUN set -euo pipefail && \
     # apt requirements
     apk add --no-cache \
@@ -20,15 +22,15 @@ RUN set -euo pipefail && \
         find aws-java-sdk-${AWS_JAVA_SDK_VERSION} -name "*.jar" -exec mv {} ${SPARK_HOME}/jars/ \; ; \
         rm -r ./aws-java-sdk-${AWS_JAVA_SDK_VERSION}; \
         rm ./aws-java-sdk-${AWS_JAVA_SDK_VERSION}.zip; \
-    # AWS IAM Authenticator with AWS CLI
-    # apk add --no-cache \
-    #     python3 \
-    #     ; \
-    # curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/aws-iam-authenticator; \
-    # chmod +x aws-iam-authenticator; \
-    # mv aws-iam-authenticator /usr/local/bin/; \
-    # python3 -m pip install setuptools; \
-    # python3 -m pip install awscli; \
+    # AWS IAM Authenticator
+    curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/aws-iam-authenticator; \
+    chmod +x aws-iam-authenticator; \
+    mv aws-iam-authenticator /usr/local/bin/; \
+    # AWS CLI
+    apk add --no-cache \
+        python3 \
+        ; \
+    python3 -m pip install setuptools awscli; \
     # Google Storage JAR
     curl -LO https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop2-latest.jar; \
     # MariaDB connector JAR
@@ -41,3 +43,8 @@ RUN set -euo pipefail && \
         curl \
         ; \
     :
+
+# Restore back the original UID
+# See https://github.com/apache/spark/blob/master/docs/running-on-kubernetes.md#user-identity
+ARG spark_uid=185
+USER ${spark_uid}

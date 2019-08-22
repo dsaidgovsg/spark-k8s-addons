@@ -7,7 +7,7 @@ env:
 
 matrix:
   include:
-{%- for v in c.versions %}
+{%- for v in versions %}
   - services: docker
     env:
     - SPARK_VERSION={{ v.spark }}
