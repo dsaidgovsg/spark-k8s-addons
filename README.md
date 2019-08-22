@@ -42,3 +42,13 @@ a flag instead:
 ```bash
 spark-shell --conf "spark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem"
 ```
+
+## How to Apply Travis Template
+
+For Linux user, you can download Tera CLI v0.2 at
+<https://github.com/guangie88/tera-cli/releases> and place it in `PATH`.
+
+Otherwise, you will need `cargo`, which can be installed via
+[rustup](https://rustup.rs/).
+
+Once `cargo` is installed, simply run `cargo install tera-cli --version=^0.2.0`.
