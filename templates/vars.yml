@@ -1,5 +1,5 @@
 versions:
-- spark:           master-f15102b
+- spark:           master-26f3443
   hadoop:          3.2.0
   aws_java_sdk:    1.11.375
 
