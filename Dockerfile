@@ -44,5 +44,7 @@ RUN set -euo pipefail && \
         ; \
     :
 
+# Restore back the original UID
+# See https://github.com/apache/spark/blob/master/docs/running-on-kubernetes.md#user-identity
 ARG spark_uid=185
 USER ${spark_uid}
