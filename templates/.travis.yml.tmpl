@@ -12,7 +12,6 @@ matrix:
     env:
     - SPARK_VERSION={{ v.spark }}
     - HADOOP_VERSION={{ v.hadoop }}
-    - AWS_JAVA_SDK_VERSION={{ v.aws_java_sdk }}
 {%- endfor %}
 
 script:
@@ -21,7 +20,6 @@ script:
     --build-arg FROM_DOCKER_IMAGE \
     --build-arg SPARK_VERSION=${SPARK_VERSION} \
     --build-arg HADOOP_VERSION=${HADOOP_VERSION} \
-    --build-arg AWS_JAVA_SDK_VERSION=${AWS_JAVA_SDK_VERSION} \
     -t "${DOCKER_IMAGE}:${SPARK_VERSION}_hadoop-${HADOOP_VERSION}"
 
 deploy:

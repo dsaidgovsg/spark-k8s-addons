@@ -5,7 +5,6 @@ ARG HADOOP_VERSION=
 FROM ${FROM_DOCKER_IMAGE}:${SPARK_VERSION}_hadoop-${HADOOP_VERSION}
 
 ARG HADOOP_VERSION=
-ARG AWS_JAVA_SDK_VERSION=
 
 USER root
 
@@ -16,6 +15,10 @@ RUN set -euo pipefail && \
         ; \
     # AWS S3 JAR
     cd ${SPARK_HOME}/jars; \
+    ## Get the aws-java-sdk version dynamic based on Hadoop version
+    ## Do not use head -n1 because it will trigger 141 exit code due to early return on pipe
+    AWS_JAVA_SDK_VERSION="$(curl -s https://raw.githubusercontent.com/apache/hadoop/branch-${HADOOP_VERSION}/hadoop-project/pom.xml | grep -A1 aws-java-sdk | grep -oE "[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+" | tr "\r\n" " " | cut -d " " -f 1)"; \
+    ## Download the JAR
     curl -LO http://central.maven.org/maven2/org/apache/hadoop/hadoop-aws/${HADOOP_VERSION}/hadoop-aws-${HADOOP_VERSION}.jar; \
     curl -LO https://sdk-for-java.amazonwebservices.com/aws-java-sdk-${AWS_JAVA_SDK_VERSION}.zip; \
         unzip -qq aws-java-sdk-${AWS_JAVA_SDK_VERSION}.zip; \
