@@ -8,23 +8,29 @@ Docker images.
 The Spark K8s Docker images are built using
 [this repository](https://github.com/guangie88/spark-k8s).
 
+Note that the images here are naturally Alpine based because of how the official
+script generates the Spark-Kubernetes images.
+
 ## Additional Utilities
 
 ### JARs
 
 The following JARs are added onto the original K8s Docker images:
 
+- Miniconda3 (i.e. `conda` command)
+  - No guarantee of which exact Python 3 version, since the intent is to allow
+    `conda` to create new environments with any Python version of the user's
+    liking in the downstream Docker images
+- [AWS CLI](https://aws.amazon.com/cli/) installed via `conda`
+- [AWS IAM Authenticator](https://github.com/kubernetes-sigs/aws-iam-authenticator)
 - AWS Hadoop SDK JAR
   - Appends `spark.hadoop.fs.s3a.impl org.apache.hadoop.fs.s3a.S3AFileSystem`
     into `spark-defaults.conf`
-- [AWS IAM Authenticator](https://github.com/kubernetes-sigs/aws-iam-authenticator)
-- [AWS CLI](https://aws.amazon.com/cli/)
 - Google Cloud Storage SDK JAR
 - MariaDB JDBC Connector JAR
 
-### Others
-
-Additionally, all Alpine builds have `gcompat` and `libc6-compat` installed to
+Additionally, the image is patched with `glibc` from
+<https://github.com/sgerrand/alpine-pkg-glibc/>, required by `conda` and also to
 prevent `glibc` shared library related issues.
 
 ## Spark Configuration
