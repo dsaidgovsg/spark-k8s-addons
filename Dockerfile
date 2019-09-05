@@ -71,9 +71,17 @@ RUN set -euo pipefail && \
         ; \
     :
 
-# Restore back the original UID
 # See https://github.com/apache/spark/blob/master/docs/running-on-kubernetes.md#user-identity
-ARG spark_uid=185
-USER ${spark_uid}
+## Restore back the original UID
+ARG SPARK_USER=spark
+ARG SPARK_USER_UID=185
 
-RUN "${CONDA_HOME}/bin/conda" init bash
+# Create proper username and home for it so that there is a default place to house the conda config
+# This will not affect the original spark-k8s set-up
+RUN set -euo pipefail && \
+    adduser --disabled-password --gecos "" -u ${SPARK_USER_UID} ${SPARK_USER}; \
+    :
+
+USER ${SPARK_USER}
+RUN conda init bash
+SHELL ["/bin/bash", "-c"]
