@@ -35,7 +35,7 @@ RUN set -euo pipefail && \
     wget "https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh"; \
     bash "Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh" -b -p "${CONDA_HOME}"; \
     rm "Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh"; \
-    conda init bash; \
+    "${CONDA_HOME}/bin/conda" init bash; \
     :
 
 ENV PATH=${PATH}:/opt/conda/bin
@@ -76,4 +76,4 @@ RUN set -euo pipefail && \
 ARG spark_uid=185
 USER ${spark_uid}
 
-RUN conda init bash
+RUN "${CONDA_HOME}/bin/conda" init bash
