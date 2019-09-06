@@ -4,12 +4,13 @@ env:
   global:
   - DOCKER_IMAGE="guangie88/spark-k8s-addons"
   - FROM_DOCKER_IMAGE="guangie88/spark-k8s"
+  - FROM_PY_DOCKER_IMAGE="guangie88/spark-k8s-py"
 
 matrix:
   include:
   - services: docker
     env:
-    - SPARK_VERSION=master-56f2887
+    - SPARK_VERSION=master-36f8e53
     - HADOOP_VERSION=3.2.0
   - services: docker
     env:

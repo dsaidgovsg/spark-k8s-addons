@@ -1,8 +1,18 @@
+# While it might make sense to start from `guangie88/spark-k8s-py` instead,
+# it is easier to just COPY over from the above image just the python directory
+# to avoid having to remove pip stuff, since we are using conda here
 ARG FROM_DOCKER_IMAGE="guangie88/spark-k8s"
+ARG FROM_PY_DOCKER_IMAGE="guangie88/spark-k8s-py"
 ARG SPARK_VERSION=
 ARG HADOOP_VERSION=
 
+# For copying of pyspark + py4j only
+FROM ${FROM_PY_DOCKER_IMAGE}:${SPARK_VERSION}_hadoop-${HADOOP_VERSION} as pybase
+
+# Base image
 FROM ${FROM_DOCKER_IMAGE}:${SPARK_VERSION}_hadoop-${HADOOP_VERSION}
+
+COPY --from=pybase "${SPARK_HOME}/python" "${SPARK_HOME}/python"
 
 ARG HADOOP_VERSION=
 
