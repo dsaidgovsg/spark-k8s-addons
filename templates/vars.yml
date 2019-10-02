@@ -1,6 +1,9 @@
 versions:
-- spark:  master-36f8e53
+- spark:  master-a4601cb
   hadoop: 3.2.0
+
+- spark:  2.3.4
+  hadoop: 2.7.3
 
 - spark:  2.4.4
   hadoop: 3.1.0
