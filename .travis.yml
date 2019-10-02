@@ -2,7 +2,7 @@ language: bash
 
 env:
   global:
-  - DOCKER_IMAGE="guangie88/spark-k8s-addons"
+  - IMAGE_NAME="spark-k8s-addons"
   - FROM_DOCKER_IMAGE="guangie88/spark-k8s"
   - FROM_PY_DOCKER_IMAGE="guangie88/spark-k8s-py"
 
@@ -10,7 +10,7 @@ matrix:
   include:
   - services: docker
     env:
-    - SPARK_VERSION=master-a4601cb
+    - SPARK_VERSION=master-3b1674c
     - HADOOP_VERSION=3.2.0
   - services: docker
     env:
@@ -23,7 +23,7 @@ script:
     --build-arg FROM_DOCKER_IMAGE \
     --build-arg SPARK_VERSION=${SPARK_VERSION} \
     --build-arg HADOOP_VERSION=${HADOOP_VERSION} \
-    -t "${DOCKER_IMAGE}:${SPARK_VERSION}_hadoop-${HADOOP_VERSION}"
+    -t "${IMAGE_NAME}:${SPARK_VERSION}_hadoop-${HADOOP_VERSION}"
 
 deploy:
   provider: script
