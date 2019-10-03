@@ -49,7 +49,7 @@ RUN set -euo pipefail && \
     "${CONDA_HOME}/bin/conda" init bash; \
     :
 
-ENV PATH=${PATH}:/opt/conda/bin
+ENV PATH="${PATH}:${SPARK_HOME}/bin:${CONDA_HOME}/bin"
 
 RUN set -euo pipefail && \
     # apt requirements
