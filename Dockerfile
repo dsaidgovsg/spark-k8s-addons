@@ -13,13 +13,14 @@ FROM ${FROM_PY_DOCKER_IMAGE}:${SPARK_VERSION}_hadoop-${HADOOP_VERSION} as pybase
 FROM ${FROM_DOCKER_IMAGE}:${SPARK_VERSION}_hadoop-${HADOOP_VERSION}
 
 COPY --from=pybase "${SPARK_HOME}/python" "${SPARK_HOME}/python"
+ENV PYTHONPATH="${SPARK_HOME}/python/lib/pyspark.zip:${SPARK_HOME}/python/lib/py4j-*.zip"
 
 ARG HADOOP_VERSION=
 
 # The miniconda version doesn't matter much because
 # it is just a means to create an environment with your required Python packages
 ARG CONDA_HOME=/opt/conda
-ENV CONDA_HOME=${CONDA_HOME}
+ENV CONDA_HOME="${CONDA_HOME}"
 ARG MINICONDA3_VERSION=4.7.10
 
 # The glibc version for Alpine doesn't matter much either
