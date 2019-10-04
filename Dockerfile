@@ -5,7 +5,6 @@ ARG FROM_DOCKER_IMAGE="guangie88/spark-k8s"
 ARG FROM_PY_DOCKER_IMAGE="guangie88/spark-k8s-py"
 ARG SPARK_VERSION=
 ARG HADOOP_VERSION=
-ARG PY4J_SRC=
 
 # For copying of pyspark + py4j only
 FROM ${FROM_PY_DOCKER_IMAGE}:${SPARK_VERSION}_hadoop-${HADOOP_VERSION} as pybase
@@ -13,6 +12,7 @@ FROM ${FROM_PY_DOCKER_IMAGE}:${SPARK_VERSION}_hadoop-${HADOOP_VERSION} as pybase
 # Base image
 FROM ${FROM_DOCKER_IMAGE}:${SPARK_VERSION}_hadoop-${HADOOP_VERSION}
 
+ARG PY4J_SRC=
 COPY --from=pybase "${SPARK_HOME}/python" "${SPARK_HOME}/python"
 ENV PYTHONPATH="${SPARK_HOME}/python/lib/pyspark.zip:${PY4J_SRC}"
 
