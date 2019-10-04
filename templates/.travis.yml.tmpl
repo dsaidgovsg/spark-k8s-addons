@@ -16,11 +16,14 @@ matrix:
 {%- endfor %}
 
 script:
+- PY4J_SRC="$(docker run --rm -t --entrypoint sh "${FROM_PY_DOCKER_IMAGE}:${SPARK_VERSION}_hadoop-${HADOOP_VERSION}" -c 'ls ${SPARK_HOME}/python/lib/py4j-*.zip')"
 - |-
   docker build . \
-    --build-arg FROM_DOCKER_IMAGE \
-    --build-arg SPARK_VERSION=${SPARK_VERSION} \
-    --build-arg HADOOP_VERSION=${HADOOP_VERSION} \
+    --build-arg FROM_DOCKER_IMAGE="${FROM_DOCKER_IMAGE}" \
+    --build-arg FROM_PY_DOCKER_IMAGE="${FROM_PY_DOCKER_IMAGE}" \
+    --build-arg SPARK_VERSION="${SPARK_VERSION}" \
+    --build-arg HADOOP_VERSION="${HADOOP_VERSION}" \
+    --build-arg PY4J_SRC="${PY4J_SRC}" \
     -t "${IMAGE_NAME}:${SPARK_VERSION}_hadoop-${HADOOP_VERSION}"
 
 deploy:
