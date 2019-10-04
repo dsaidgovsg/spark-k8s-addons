@@ -18,7 +18,7 @@ matrix:
     - HADOOP_VERSION=3.1.0
 
 script:
-- PY4J_SRC="$(docker run --rm -t --entrypoint sh "${FROM_PY_DOCKER_IMAGE}:${SPARK_VERSION}_hadoop-${HADOOP_VERSION}" -c 'ls ${SPARK_HOME}/python/lib/py4j-*.zip')"
+- PY4J_SRC="$(docker run --rm -t --entrypoint sh "${FROM_PY_DOCKER_IMAGE}:${SPARK_VERSION}_hadoop-${HADOOP_VERSION}" -c 'ls --color=never ${SPARK_HOME}/python/lib/py4j-*.zip' | tr -d "\r\n")"
 - |-
   docker build . \
     --build-arg FROM_DOCKER_IMAGE="${FROM_DOCKER_IMAGE}" \
