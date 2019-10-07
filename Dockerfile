@@ -21,7 +21,10 @@ ARG HADOOP_VERSION=
 # it is just a means to create an environment with your required Python packages
 ARG CONDA_HOME=/opt/conda
 ENV CONDA_HOME="${CONDA_HOME}"
-ARG MINICONDA3_VERSION=4.0.5
+
+# We pick 4.5 because it is just before the major change to conda init and also
+# downgrading and upgrading Python is easy at this version on the base env
+ARG MINICONDA3_VERSION=4.5.12
 
 # The glibc version for Alpine doesn't matter much either
 # as long as all the symbols we need are there
@@ -43,12 +46,11 @@ RUN set -euo pipefail && \
     apk add "glibc-${ALPINE_GLIBC_VERSION}-r0.apk" "glibc-bin-${ALPINE_GLIBC_VERSION}-r0.apk" "glibc-i18n-${ALPINE_GLIBC_VERSION}-r0.apk"; \
     rm "glibc-${ALPINE_GLIBC_VERSION}-r0.apk" "glibc-bin-${ALPINE_GLIBC_VERSION}-r0.apk" "glibc-i18n-${ALPINE_GLIBC_VERSION}-r0.apk"; \
     ## Finally install conda
-    ## We use the oldest possible version of Miniconda3 in order to get the oldest possible Python
-    ## making it possible to both downgrade to 2.7 and 3.3 and upgrade all the way up
     wget "https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh"; \
     bash "Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh" -b -p "${CONDA_HOME}"; \
     rm "Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh"; \
-    "${CONDA_HOME}/bin/conda" init bash; \
+    # Version 4.5 and below does not require the below line
+    # "${CONDA_HOME}/bin/conda" init bash; \
     :
 
 ENV PATH="${PATH}:${SPARK_HOME}/bin:${CONDA_HOME}/bin"
@@ -96,5 +98,6 @@ RUN set -euo pipefail && \
     :
 
 USER ${SPARK_USER}
-RUN conda init bash
+# Version 3
+# RUN conda init bash
 SHELL ["/bin/bash", "-c"]
