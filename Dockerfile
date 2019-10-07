@@ -56,7 +56,7 @@ RUN set -euo pipefail && \
     ## Note that this set-up will never activate the environment and rather
     ## globally adds to PATH so that every user can access the installed stuff
     ## without going through conda activate
-    conda create -p "${CONDA_PREFIX}"; \
+    conda create -y -p "${CONDA_PREFIX}"; \
     conda config --add channels conda-forge; \
     :
 
