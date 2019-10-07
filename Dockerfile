@@ -73,7 +73,8 @@ RUN set -euo pipefail && \
     chmod +x aws-iam-authenticator; \
     mv aws-iam-authenticator /usr/local/bin/; \
     # AWS CLI
-    conda install -c conda-forge awscli; \
+    conda config --add channels conda-forge; \
+    conda install awscli; \
     conda clean -a -y; \
     # Google Storage JAR
     wget https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop2-latest.jar; \
