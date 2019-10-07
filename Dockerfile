@@ -45,7 +45,7 @@ RUN set -euo pipefail && \
     ## Finally install conda
     ## We use the oldest possible version of Miniconda3 in order to get the oldest possible Python
     ## making it possible to both downgrade to 2.7 and 3.3 and upgrade all the way up
-    wget "https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA3_VERSION}-Linux-x86.sh"; \
+    wget "https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh"; \
     bash "Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh" -b -p "${CONDA_HOME}"; \
     rm "Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh"; \
     "${CONDA_HOME}/bin/conda" init bash; \
