@@ -18,14 +18,12 @@ ENV PYTHONPATH="${SPARK_HOME}/python/lib/pyspark.zip:${PY4J_SRC}"
 
 ARG HADOOP_VERSION=
 
-# The miniconda version doesn't matter much because
-# it is just a means to create an environment with your required Python packages
-ARG CONDA_HOME=/opt/conda
-ENV CONDA_HOME="${CONDA_HOME}"
+# This directory will hold all the bins and libs installed via conda
+ARG CONDA_PREFIX=/opt/conda/default
+ENV CONDA_PREFIX="${CONDA_PREFIX}"
 
-# We pick 4.5 because it is just before the major change to conda init and also
-# downgrading and upgrading Python is easy at this version on the base env
-ARG MINICONDA3_VERSION=4.5.12
+# The conda3 version shouldn't matter much, can just take the latest
+ARG MINICONDA3_VERSION=4.7.12
 
 # The glibc version for Alpine doesn't matter much either
 # as long as all the symbols we need are there
@@ -46,15 +44,25 @@ RUN set -euo pipefail && \
     wget "https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${ALPINE_GLIBC_VERSION}-r0/glibc-i18n-${ALPINE_GLIBC_VERSION}-r0.apk"; \
     apk add "glibc-${ALPINE_GLIBC_VERSION}-r0.apk" "glibc-bin-${ALPINE_GLIBC_VERSION}-r0.apk" "glibc-i18n-${ALPINE_GLIBC_VERSION}-r0.apk"; \
     rm "glibc-${ALPINE_GLIBC_VERSION}-r0.apk" "glibc-bin-${ALPINE_GLIBC_VERSION}-r0.apk" "glibc-i18n-${ALPINE_GLIBC_VERSION}-r0.apk"; \
-    ## Finally install conda
-    wget "https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh"; \
-    bash "Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh" -b -p "${CONDA_HOME}"; \
-    rm "Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh"; \
-    # Version 4.5 and below does not require the below line
-    # "${CONDA_HOME}/bin/conda" init bash; \
+    ## We install a special compiled and linked version of conda
+    ## The original .sh conda assumes preset Python version, and upgrading the
+    ## base env Python version will immediately break conda
+    ## Using the pre-linked conda makes the set-up completely independent from
+    ## the Python version (in fact there is no default Python version to speak)
+    wget "https://repo.anaconda.com/pkgs/misc/conda-execs/conda-${MINICONDA3_VERSION}-linux-64.exe";\
+    mv "conda-${MINICONDA3_VERSION}-linux-64.exe" /usr/local/bin/conda; \
+    chmod +x /usr/local/bin/conda; \
+    ## Create the basic configuration for installation later
+    ## Note that this set-up will never activate the environment and rather
+    ## globally adds to PATH so that every user can access the installed stuff
+    ## without going through conda activate
+    conda create -y -p "${CONDA_PREFIX}"; \
+    conda config --add channels conda-forge; \
     :
 
-ENV PATH="${PATH}:${SPARK_HOME}/bin:${CONDA_HOME}/bin"
+# We set conda with higher precedence on purpose here to handle all Python
+# related packages over the system package manager
+ENV PATH="${CONDA_PREFIX}/bin:${PATH}:${SPARK_HOME}/bin"
 
 RUN set -euo pipefail && \
     # apt requirements
@@ -74,8 +82,9 @@ RUN set -euo pipefail && \
     chmod +x aws-iam-authenticator; \
     mv aws-iam-authenticator /usr/local/bin/; \
     # AWS CLI
-    conda config --add channels conda-forge; \
-    conda install awscli; \
+    ## We use the weakest possible version of Python so that the deriving image
+    ## can easily upgrade the Python version later on
+    conda install -y python=2.7 awscli; \
     conda clean -a -y; \
     # Google Storage JAR
     wget https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop2-latest.jar; \
