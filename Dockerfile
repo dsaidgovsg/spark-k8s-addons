@@ -84,7 +84,7 @@ RUN set -euo pipefail && \
     # AWS CLI
     ## We use the weakest possible version of Python so that the deriving image
     ## can easily upgrade the Python version later on
-    conda install python=2.7 awscli; \
+    conda install -y python=2.7 awscli; \
     conda clean -a -y; \
     # Google Storage JAR
     wget https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop2-latest.jar; \
