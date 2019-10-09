@@ -49,7 +49,7 @@ RUN set -euo pipefail && \
     ## base env Python version will immediately break conda
     ## Using the pre-linked conda makes the set-up completely independent from
     ## the Python version (in fact there is no default Python version to speak)
-    wget "https://repo.anaconda.com/pkgs/misc/conda-execs/conda-${MINICONDA3_VERSION}-linux-64.exe";\
+    wget "https://repo.anaconda.com/pkgs/misc/conda-execs/conda-${MINICONDA3_VERSION}-linux-64.exe"; \
     mv "conda-${MINICONDA3_VERSION}-linux-64.exe" /usr/local/bin/conda; \
     chmod +x /usr/local/bin/conda; \
     ## Create the basic configuration for installation later
@@ -58,6 +58,8 @@ RUN set -euo pipefail && \
     ## without going through conda activate
     conda create -y -p "${CONDA_PREFIX}"; \
     conda config --add channels conda-forge; \
+    ## Alpine's ctypes find_library is quite broken
+    ## Need to directly feed the .so to the Conda directory
     :
 
 # We set conda with higher precedence on purpose here to handle all Python
@@ -86,6 +88,14 @@ RUN set -euo pipefail && \
     ## can easily upgrade the Python version later on
     conda install -y python=2.7 awscli; \
     conda clean -a -y; \
+    ## For some reason alpine-pkg-glibc doesn't put up libc.so and libm.so as proper shared libraries
+    ## So we symbolic link these against the actual shared libraries
+    ## And we verify if we can find the basic libraries at the end
+    find /usr/glibc-compat/lib -type f -name '*.so*' -exec ln -s {} "${CONDA_PREFIX}/lib/" \; ; \
+    unlink "${CONDA_PREFIX}/lib/libc.so" && unlink "${CONDA_PREFIX}/lib/libm.so"; \
+    ln -s /usr/glibc-compat/lib/libc.so.6 "${CONDA_PREFIX}/lib/libc.so"; \
+    ln -s /usr/glibc-compat/lib/libm.so.6 "${CONDA_PREFIX}/lib/libm.so"; \
+    python -c "from ctypes.util import find_library; exit(1) if not find_library('c') or not find_library('m') else exit(0)"; \
     # Google Storage JAR
     wget https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop2-latest.jar; \
     # MariaDB connector JAR
@@ -105,7 +115,7 @@ ARG SPARK_USER_UID=185
 # Create proper username and home for it so that there is a default place to house the conda config
 # This will not affect the original spark-k8s set-up
 RUN set -euo pipefail && \
-    adduser --disabled-password --gecos "" -u ${SPARK_USER_UID} ${SPARK_USER}; \
+    adduser --disabled-password --gecos "" -u "${SPARK_USER_UID}" "${SPARK_USER}"; \
     :
 
 USER ${SPARK_USER}
