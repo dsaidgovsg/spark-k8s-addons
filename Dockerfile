@@ -58,6 +58,16 @@ RUN set -euo pipefail && \
     ## without going through conda activate
     conda create -y -p "${CONDA_PREFIX}"; \
     conda config --add channels conda-forge; \
+    ## Alpine's ctypes find_library is quite broken
+    ## Need to directly feed the .so to the Conda directory
+    find /usr/glibc-compat/lib -type f -name '*.so*' -exec ln -s {} "${CONDA_PREFIX}/lib/" \; ;\
+    ## For some reason alpine-pkg-glibc doesn't put up libc.so and libm.so as proper shared libraries
+    ## So we symbolic link these against the actual shared libraries
+    unlink "${CONDA_PREFIX}/lib/libc.so" && unlink "${CONDA_PREFIX}/lib/libm.so"; \
+    ln -s /usr/glibc-compat/lib/libc.so.6 "${CONDA_PREFIX}/lib/libc.so"; \
+    ln -s /usr/glibc-compat/lib/libm.so.6 "${CONDA_PREFIX}/lib/libm.so"; \
+    ## Verify if we can find the basic libraries
+    python -c "from ctypes.util import find_library; exit(1) if not find_library('c') or not find_library('m') else exit(0)"; \
     :
 
 # We set conda with higher precedence on purpose here to handle all Python
