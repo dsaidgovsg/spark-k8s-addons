@@ -10,7 +10,7 @@ matrix:
   include:
   - services: docker
     env:
-    - SPARK_VERSION=master-85dafab
+    - SPARK_VERSION=master-901ff92
     - HADOOP_VERSION=3.2.0
   - services: docker
     env:
