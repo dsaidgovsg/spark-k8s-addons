@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches:
+    - master
+    - v*
+  pull_request:
+    branches:
+    - master
+    - v*
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        version:
+{%- for v in versions %}
+{%- for spark in v.spark %}
+{%- for hadoop in v.hadoop %}
+{%- for scala in v.scala %}
+        - spark:  "{{ spark }}"
+          hadoop: "{{ hadoop }}"
+          scala:  "{{ scala }}"
+{%- endfor %}
+{%- endfor %}
+{%- endfor %}
+{%- endfor %}
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: spark-k8s-addons
+      FROM_DOCKER_IMAGE: guangie88/spark-k8s
+      FROM_PY_DOCKER_IMAGE: guangie88/spark-k8s-py
+      SELF_VERSION: "{{ self_version }}"
+      {% raw -%}
+      SPARK_VERSION: "${{ matrix.version.spark }}"
+      HADOOP_VERSION: "${{ matrix.version.hadoop }}"
+      SCALA_VERSION: "${{ matrix.version.scala }}"
+      {%- endraw %}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v1
+    - name: Install tera-cli
+      run: |-
+        wget https://github.com/guangie88/tera-cli/releases/download/v0.3.0/tera_linux_amd64 -O /tmp/tera
+        chmod +x /tmp/tera
+    - name: Check differences between ci.yml and ci.yml.tmpl
+      run: |-
+        cp .github/workflows/ci.yml .github/workflows/ci.yml.backup
+        TERA=/tmp/tera ./templates/apply-vars.sh
+        if ! diff .github/workflows/ci.yml .github/workflows/ci.yml.backup; then echo "ci.yml.tmpl and ci.yml differs!" && exit 1; fi
+    - name: Build Docker image
+      run: |-
+        PY4J_SRC="$(docker run --rm -t --entrypoint sh "${FROM_PY_DOCKER_IMAGE}:${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}" -c 'ls --color=never ${SPARK_HOME}/python/lib/py4j-*.zip' | tr -d "\r\n")"
+        echo "PY4J_SRC - ${PY4J_SRC}"
+        TAG_NAME="${SELF_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}"
+        docker build . -t "${IMAGE_NAME}:${TAG_NAME}" \
+          --build-arg FROM_DOCKER_IMAGE="${FROM_DOCKER_IMAGE}" \
+          --build-arg FROM_PY_DOCKER_IMAGE="${FROM_PY_DOCKER_IMAGE}" \
+          --build-arg SPARK_VERSION="${SPARK_VERSION}" \
+          --build-arg HADOOP_VERSION="${HADOOP_VERSION}" \
+          --build-arg SCALA_VERSION="${SCALA_VERSION}" \
+          --build-arg PY4J_SRC="${PY4J_SRC}" \
+    - name: Push Docker image
+      run: bash push-images.sh
+      env:
+        {% raw -%}
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        {%- endraw %}
+      if: github.event_name == 'push'

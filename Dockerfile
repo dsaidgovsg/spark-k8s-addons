@@ -3,20 +3,23 @@
 # to avoid having to remove pip stuff, since we are using conda here
 ARG FROM_DOCKER_IMAGE="guangie88/spark-k8s"
 ARG FROM_PY_DOCKER_IMAGE="guangie88/spark-k8s-py"
-ARG SPARK_VERSION=
-ARG HADOOP_VERSION=
+
+ARG BASE_VERSION="v1"
+ARG SPARK_VERSION
+ARG HADOOP_VERSION
 
 # For copying of pyspark + py4j only
-FROM ${FROM_PY_DOCKER_IMAGE}:${SPARK_VERSION}_hadoop-${HADOOP_VERSION} as pybase
+FROM ${FROM_PY_DOCKER_IMAGE}:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION} as pybase
 
 # Base image
-FROM ${FROM_DOCKER_IMAGE}:${SPARK_VERSION}_hadoop-${HADOOP_VERSION}
+FROM ${FROM_DOCKER_IMAGE}:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}
 
-ARG PY4J_SRC=
+ARG PY4J_SRC
+
 COPY --from=pybase "${SPARK_HOME}/python" "${SPARK_HOME}/python"
 ENV PYTHONPATH="${SPARK_HOME}/python/lib/pyspark.zip:${PY4J_SRC}"
 
-ARG HADOOP_VERSION=
+ARG HADOOP_VERSION
 
 # This directory will hold all the bins and libs installed via conda
 ARG CONDA_PREFIX=/opt/conda/default
@@ -67,15 +70,11 @@ RUN set -euo pipefail && \
 ENV PATH="${CONDA_PREFIX}/bin:${PATH}:${SPARK_HOME}/bin"
 
 RUN set -euo pipefail && \
-    # apt requirements
-    apk add --no-cache \
-        curl \
-        ; \
     # AWS S3 JAR
     cd ${SPARK_HOME}/jars; \
     ## Get the aws-java-sdk version dynamic based on Hadoop version
     ## Do not use head -n1 because it will trigger 141 exit code due to early return on pipe
-    AWS_JAVA_SDK_VERSION="$(curl -s https://raw.githubusercontent.com/apache/hadoop/branch-${HADOOP_VERSION}/hadoop-project/pom.xml | grep -A1 aws-java-sdk | grep -oE "[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+" | tr "\r\n" " " | cut -d " " -f 1)"; \
+    AWS_JAVA_SDK_VERSION="$(wget -qO- https://raw.githubusercontent.com/apache/hadoop/branch-${HADOOP_VERSION}/hadoop-project/pom.xml | grep -A1 aws-java-sdk | grep -oE "[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+" | tr "\r\n" " " | cut -d " " -f 1)"; \
     ## Download the JAR
     wget http://central.maven.org/maven2/org/apache/hadoop/hadoop-aws/${HADOOP_VERSION}/hadoop-aws-${HADOOP_VERSION}.jar; \
     wget https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/${AWS_JAVA_SDK_VERSION}/aws-java-sdk-bundle-${AWS_JAVA_SDK_VERSION}.jar; \
@@ -101,10 +100,6 @@ RUN set -euo pipefail && \
     # MariaDB connector JAR
     wget https://downloads.mariadb.com/Connectors/java/connector-java-2.4.0/mariadb-java-client-2.4.0.jar; \
     cd -; \
-    # apt clean-up
-    apk del \
-        curl \
-        ; \
     :
 
 # See https://github.com/apache/spark/blob/master/docs/running-on-kubernetes.md#user-identity

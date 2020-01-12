@@ -1,9 +1,9 @@
 # `spark-k8s-addons`
 
-[![Build Status](https://travis-ci.org/guangie88/spark-k8s-addons.svg?branch=master)](https://travis-ci.org/guangie88/spark-k8s-addons)
+![CI Status](https://img.shields.io/github/workflow/status/guangie88/spark-k8s-addons/CI/master?color=green&label=CI&logo=github&logoColor=white&style=for-the-badge)
 
-Dockerfile setup to install cloud related utilities onto the standard Spark K8s
-Docker images.
+CI Dockerfile setup to install cloud related utilities onto the standard Spark
+K8s Docker images.
 
 The Spark K8s Docker images are built using
 [this repository](https://github.com/guangie88/spark-k8s).
@@ -79,10 +79,10 @@ spark-shell --conf "spark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSys
 
 ## How to Apply Travis Template
 
-For Linux user, you can download Tera CLI v0.2 at
+For Linux user, you can download Tera CLI v0.3 at
 <https://github.com/guangie88/tera-cli/releases> and place it in `PATH`.
 
 Otherwise, you will need `cargo`, which can be installed via
 [rustup](https://rustup.rs/).
 
-Once `cargo` is installed, simply run `cargo install tera-cli --version=^0.2.0`.
+Once `cargo` is installed, simply run `cargo install tera-cli --version=^0.3.0`.
