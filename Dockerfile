@@ -1,18 +1,17 @@
 # While it might make sense to start from `guangie88/spark-k8s-py` instead,
 # it is easier to just COPY over from the above image just the python directory
 # to avoid having to remove pip stuff, since we are using conda here
-ARG FROM_DOCKER_IMAGE="guangie88/spark-k8s"
-ARG FROM_PY_DOCKER_IMAGE="guangie88/spark-k8s-py"
 
-ARG BASE_VERSION="v1"
+ARG BASE_VERSION="v2"
 ARG SPARK_VERSION
 ARG HADOOP_VERSION
+ARG SCALA_VERSION
 
 # For copying of pyspark + py4j only
-FROM ${FROM_PY_DOCKER_IMAGE}:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION} as pybase
+FROM guangie88/spark-k8s-py:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION} as pybase
 
 # Base image
-FROM ${FROM_DOCKER_IMAGE}:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}
+FROM guangie88/spark-k8s:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}
 
 ARG PY4J_SRC
 
@@ -28,25 +27,17 @@ ENV CONDA_PREFIX="${CONDA_PREFIX}"
 # The conda3 version shouldn't matter much, can just take the latest
 ARG MINICONDA3_VERSION=4.7.12
 
-# The glibc version for Alpine doesn't matter much either
-# as long as all the symbols we need are there
-ARG ALPINE_GLIBC_VERSION=2.30
-ENV ALPINE_GLIBC_VERSION=${ALPINE_GLIBC_VERSION}
-
 USER root
+
+# Install wget for to get external deps
+RUN set -euo pipefail && \
+    apt-get update; \
+    apt-get install -y wget; \
+    rm -rf /var/lib/apt/lists/*; \
+    :
 
 RUN set -euo pipefail && \
     # Install conda to enable downstream to create Python environment
-    ## conda needs working glibc and bash
-    apk add --no-cache bash ca-certificates; \
-    wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub; \
-    ## Delete known conflicting packages first
-    apk del libc6-compat; \
-    wget "https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${ALPINE_GLIBC_VERSION}-r0/glibc-${ALPINE_GLIBC_VERSION}-r0.apk"; \
-    wget "https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${ALPINE_GLIBC_VERSION}-r0/glibc-bin-${ALPINE_GLIBC_VERSION}-r0.apk"; \
-    wget "https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${ALPINE_GLIBC_VERSION}-r0/glibc-i18n-${ALPINE_GLIBC_VERSION}-r0.apk"; \
-    apk add "glibc-${ALPINE_GLIBC_VERSION}-r0.apk" "glibc-bin-${ALPINE_GLIBC_VERSION}-r0.apk" "glibc-i18n-${ALPINE_GLIBC_VERSION}-r0.apk"; \
-    rm "glibc-${ALPINE_GLIBC_VERSION}-r0.apk" "glibc-bin-${ALPINE_GLIBC_VERSION}-r0.apk" "glibc-i18n-${ALPINE_GLIBC_VERSION}-r0.apk"; \
     ## We install a special compiled and linked version of conda
     ## The original .sh conda assumes preset Python version, and upgrading the
     ## base env Python version will immediately break conda
@@ -61,8 +52,6 @@ RUN set -euo pipefail && \
     ## without going through conda activate
     conda create -y -p "${CONDA_PREFIX}"; \
     conda config --add channels conda-forge; \
-    ## Alpine's ctypes find_library is quite broken
-    ## Need to directly feed the .so to the Conda directory
     :
 
 # We set conda with higher precedence on purpose here to handle all Python
@@ -87,14 +76,6 @@ RUN set -euo pipefail && \
     ## can easily upgrade the Python version later on
     conda install -y python=2.7 awscli; \
     conda clean -a -y; \
-    ## For some reason alpine-pkg-glibc doesn't put up libc.so and libm.so as proper shared libraries
-    ## So we symbolic link these against the actual shared libraries
-    ## And we verify if we can find the basic libraries at the end
-    find /usr/glibc-compat/lib -type f -name '*.so*' -exec ln -s {} "${CONDA_PREFIX}/lib/" \; ; \
-    unlink "${CONDA_PREFIX}/lib/libc.so" && unlink "${CONDA_PREFIX}/lib/libm.so"; \
-    ln -s /usr/glibc-compat/lib/libc.so.6 "${CONDA_PREFIX}/lib/libc.so"; \
-    ln -s /usr/glibc-compat/lib/libm.so.6 "${CONDA_PREFIX}/lib/libm.so"; \
-    python -c "from ctypes.util import find_library; exit(1) if not find_library('c') or not find_library('m') else exit(0)"; \
     # Google Storage JAR
     wget https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop2-latest.jar; \
     # MariaDB connector JAR
@@ -114,6 +95,4 @@ RUN set -euo pipefail && \
     :
 
 USER ${SPARK_USER}
-# Version 3
-# RUN conda init bash
 SHELL ["/bin/bash", "-c"]

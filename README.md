@@ -8,8 +8,8 @@ K8s Docker images.
 The Spark K8s Docker images are built using
 [this repository](https://github.com/guangie88/spark-k8s).
 
-Note that the images here are naturally Alpine based because of how the official
-script generates the Spark-Kubernetes images.
+Note that the images here are Debian based because of how the official script
+generates the Spark-Kubernetes images.
 
 ## Add-ons
 
@@ -17,12 +17,6 @@ script generates the Spark-Kubernetes images.
 
 A more human-friendly `spark` username has been added at UID 185, which is the
 default UID dictated by the official Spark-Kubernetes Docker image build.
-
-### Alpine `glibc`
-
-Additionally, the image is patched with `glibc` from
-<https://github.com/sgerrand/alpine-pkg-glibc/>, required by `conda` and also to
-prevent `glibc` shared library related issues.
 
 ### CLIs
 
