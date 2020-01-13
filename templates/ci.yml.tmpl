@@ -29,8 +29,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: spark-k8s-addons
-      FROM_DOCKER_IMAGE: guangie88/spark-k8s
-      FROM_PY_DOCKER_IMAGE: guangie88/spark-k8s-py
       SELF_VERSION: "{{ self_version }}"
       {% raw -%}
       SPARK_VERSION: "${{ matrix.version.spark }}"
@@ -55,8 +53,6 @@ jobs:
         echo "PY4J_SRC - ${PY4J_SRC}"
         TAG_NAME="${SELF_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}"
         docker build . -t "${IMAGE_NAME}:${TAG_NAME}" \
-          --build-arg FROM_DOCKER_IMAGE="${FROM_DOCKER_IMAGE}" \
-          --build-arg FROM_PY_DOCKER_IMAGE="${FROM_PY_DOCKER_IMAGE}" \
           --build-arg SPARK_VERSION="${SPARK_VERSION}" \
           --build-arg HADOOP_VERSION="${HADOOP_VERSION}" \
           --build-arg SCALA_VERSION="${SCALA_VERSION}" \

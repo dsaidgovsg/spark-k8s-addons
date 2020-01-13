@@ -15,18 +15,16 @@ jobs:
     strategy:
       matrix:
         version:
-        - spark:  "2.4.4"
-          hadoop: "3.1.0"
-          scala:  "2.11"
-        - spark:  "2.4.4"
-          hadoop: "3.1.0"
+        - spark:  "3.0.0-preview-rc2"
+          hadoop: "3.2.0"
+          scala:  "2.12"
+        - spark:  "3.0.0-preview2-rc2"
+          hadoop: "3.2.0"
           scala:  "2.12"
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: spark-k8s-addons
-      FROM_DOCKER_IMAGE: guangie88/spark-k8s
-      FROM_PY_DOCKER_IMAGE: guangie88/spark-k8s-py
-      SELF_VERSION: "v1"
+      SELF_VERSION: "v2"
       SPARK_VERSION: "${{ matrix.version.spark }}"
       HADOOP_VERSION: "${{ matrix.version.hadoop }}"
       SCALA_VERSION: "${{ matrix.version.scala }}"
@@ -48,8 +46,6 @@ jobs:
         echo "PY4J_SRC - ${PY4J_SRC}"
         TAG_NAME="${SELF_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}"
         docker build . -t "${IMAGE_NAME}:${TAG_NAME}" \
-          --build-arg FROM_DOCKER_IMAGE="${FROM_DOCKER_IMAGE}" \
-          --build-arg FROM_PY_DOCKER_IMAGE="${FROM_PY_DOCKER_IMAGE}" \
           --build-arg SPARK_VERSION="${SPARK_VERSION}" \
           --build-arg HADOOP_VERSION="${HADOOP_VERSION}" \
           --build-arg SCALA_VERSION="${SCALA_VERSION}" \
