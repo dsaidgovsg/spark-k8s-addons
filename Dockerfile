@@ -99,6 +99,8 @@ RUN set -euo pipefail && \
     wget https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop2-latest.jar; \
     # MariaDB connector JAR
     wget https://downloads.mariadb.com/Connectors/java/connector-java-2.4.0/mariadb-java-client-2.4.0.jar; \
+    # Postgres JDBC JAR
+    wget https://jdbc.postgresql.org/download/postgresql-42.2.9.jar; \
     cd -; \
     :
 
