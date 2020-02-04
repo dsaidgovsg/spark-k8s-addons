@@ -47,6 +47,8 @@ RUN set -euo pipefail && \
     wget "https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${ALPINE_GLIBC_VERSION}-r0/glibc-i18n-${ALPINE_GLIBC_VERSION}-r0.apk"; \
     apk add "glibc-${ALPINE_GLIBC_VERSION}-r0.apk" "glibc-bin-${ALPINE_GLIBC_VERSION}-r0.apk" "glibc-i18n-${ALPINE_GLIBC_VERSION}-r0.apk"; \
     rm "glibc-${ALPINE_GLIBC_VERSION}-r0.apk" "glibc-bin-${ALPINE_GLIBC_VERSION}-r0.apk" "glibc-i18n-${ALPINE_GLIBC_VERSION}-r0.apk"; \
+    ## Define a new locale and use it as the default
+    /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8; \
     ## We install a special compiled and linked version of conda
     ## The original .sh conda assumes preset Python version, and upgrading the
     ## base env Python version will immediately break conda
@@ -64,6 +66,11 @@ RUN set -euo pipefail && \
     ## Alpine's ctypes find_library is quite broken
     ## Need to directly feed the .so to the Conda directory
     :
+
+# Set the locale to default en_US with UTF-8
+# This locale must be created via localedef in the command below
+# This is important for default encoding when opening files in Python3 and it matches the default in Debian
+ENV LANG="en_US.UTF-8"
 
 # We set conda with higher precedence on purpose here to handle all Python
 # related packages over the system package manager
@@ -95,6 +102,8 @@ RUN set -euo pipefail && \
     ln -s /usr/glibc-compat/lib/libc.so.6 "${CONDA_PREFIX}/lib/libc.so"; \
     ln -s /usr/glibc-compat/lib/libm.so.6 "${CONDA_PREFIX}/lib/libm.so"; \
     python -c "from ctypes.util import find_library; exit(1) if not find_library('c') or not find_library('m') else exit(0)"; \
+    ## Verify the locale default encoding to be UTF-8
+    python -c "import locale; exit(1) if not locale.getpreferredencoding() == 'UTF-8' else exit(0)"; \
     # Google Storage JAR
     wget https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop2-latest.jar; \
     # MariaDB connector JAR
