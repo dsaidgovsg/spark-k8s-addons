@@ -1,6 +1,10 @@
 self_version: "v2"
 
 versions:
+- spark:  ["2.4.5"]
+  hadoop: ["3.1.0"]
+  scala:  ["2.11", "2.12"]
+
 - spark:  ["3.0.0-preview-rc2", "3.0.0-preview2-rc2"]
   hadoop: ["3.2.0"]
   scala:  ["2.12"]
