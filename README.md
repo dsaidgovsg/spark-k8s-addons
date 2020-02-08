@@ -1,6 +1,6 @@
 # `spark-k8s-addons`
 
-![CI Status](https://img.shields.io/github/workflow/status/guangie88/spark-k8s-addons/CI/master?color=green&label=CI&logo=github&logoColor=white&style=for-the-badge)
+![CI Status](https://img.shields.io/github/workflow/status/guangie88/spark-k8s-addons/CI/master?label=CI&logo=github&style=for-the-badge)
 
 CI Dockerfile setup to install cloud related utilities onto the standard Spark
 K8s Docker images.
