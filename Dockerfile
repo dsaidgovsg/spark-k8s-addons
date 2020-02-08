@@ -20,7 +20,9 @@ ENV PYTHONPATH="${SPARK_HOME}/python/lib/pyspark.zip:${PY4J_SRC}"
 
 ARG HADOOP_VERSION
 
-# This directory will hold all the bins and libs installed via conda
+# This directory will hold all the default bins and libs installed via conda
+ARG CONDA_HOME=/opt/conda
+ENV CONDA_HOME="${CONDA_HOME}"
 ARG CONDA_PREFIX=/opt/conda/default
 ENV CONDA_PREFIX="${CONDA_PREFIX}"
 
@@ -37,26 +39,22 @@ RUN set -euo pipefail && \
     :
 
 RUN set -euo pipefail && \
-    # Install conda to enable downstream to create Python environment
-    ## We install a special compiled and linked version of conda
-    ## The original .sh conda assumes preset Python version, and upgrading the
-    ## base env Python version will immediately break conda
-    ## Using the pre-linked conda makes the set-up completely independent from
-    ## the Python version (in fact there is no default Python version to speak)
-    wget "https://repo.anaconda.com/pkgs/misc/conda-execs/conda-${MINICONDA3_VERSION}-linux-64.exe"; \
-    mv "conda-${MINICONDA3_VERSION}-linux-64.exe" /usr/local/bin/conda; \
-    chmod +x /usr/local/bin/conda; \
+    ## Install conda via installer
+    wget "https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh"; \
+    bash "Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh" -b -p "${CONDA_HOME}"; \
+    rm "Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh"; \
     ## Create the basic configuration for installation later
     ## Note that this set-up will never activate the environment and rather
     ## globally adds to PATH so that every user can access the installed stuff
     ## without going through conda activate
-    conda create -y -p "${CONDA_PREFIX}"; \
-    conda config --add channels conda-forge; \
+    "${CONDA_HOME}/bin/conda" config --add channels conda-forge; \
+    "${CONDA_HOME}/bin/conda" create -y -p "${CONDA_PREFIX}" python=2.7; \
+    "${CONDA_HOME}/bin/conda" clean -a -y; \
     :
 
 # We set conda with higher precedence on purpose here to handle all Python
 # related packages over the system package manager
-ENV PATH="${CONDA_PREFIX}/bin:${PATH}:${SPARK_HOME}/bin"
+ENV PATH="${CONDA_PREFIX}/bin:${CONDA_HOME}/bin:${SPARK_HOME}/bin:${PATH}"
 
 RUN set -euo pipefail && \
     # AWS S3 JAR
@@ -74,7 +72,7 @@ RUN set -euo pipefail && \
     # AWS CLI
     ## We use the weakest possible version of Python so that the deriving image
     ## can easily upgrade the Python version later on
-    conda install -y python=2.7 awscli; \
+    conda install -y -p "${CONDA_PREFIX}" awscli; \
     conda clean -a -y; \
     # Google Storage JAR
     wget https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop2-latest.jar; \

@@ -2,6 +2,9 @@
 
 ## v2
 
+- `CONDA_PREFIX` is the default prefix to contain all `conda install` bins and
+  libs. `PATH` is prepended with `${CONDA_PREFIX}/bin` so that the executables
+  in this default Conda prefix will take precedence.
 - Switch to Debian base set-up due to official change in Kubernetes Docker base
   image used.
 
