@@ -44,11 +44,10 @@ RUN set -euo pipefail && \
     bash "Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh" -b -p "${CONDA_HOME}"; \
     rm "Miniconda3-${MINICONDA3_VERSION}-Linux-x86_64.sh"; \
     ## Create the basic configuration for installation later
-    ## Note that this set-up will never activate the environment and rather
-    ## globally adds to PATH so that every user can access the installed stuff
-    ## without going through conda activate
+    ## Do not put any packages in create because this seems to pin the packages to the given versions
+    ## Use conda install for that instead
     "${CONDA_HOME}/bin/conda" config --add channels conda-forge; \
-    "${CONDA_HOME}/bin/conda" create -y -p "${CONDA_PREFIX}" python=2.7; \
+    "${CONDA_HOME}/bin/conda" create -y -p "${CONDA_PREFIX}"; \
     "${CONDA_HOME}/bin/conda" clean -a -y; \
     :
 
@@ -70,9 +69,11 @@ RUN set -euo pipefail && \
     chmod +x aws-iam-authenticator; \
     mv aws-iam-authenticator /usr/local/bin/; \
     # AWS CLI
-    ## We use the weakest possible version of Python so that the deriving image
+    ## We use the earliest possible version of Python 3 so that the deriving image
     ## can easily upgrade the Python version later on
-    conda install -y -p "${CONDA_PREFIX}" awscli; \
+    ## We simply drop support for Python 2 because it is often not possible for conda to resolve the
+    ## version dependencies later on
+    conda install -y -p "${CONDA_PREFIX}" python=3.4 awscli; \
     conda clean -a -y; \
     # Google Storage JAR
     wget https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop2-latest.jar; \
