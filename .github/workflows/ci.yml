@@ -21,10 +21,10 @@ jobs:
         - spark:  "2.4.5"
           hadoop: "3.1.0"
           scala:  "2.12"
-        - spark:  "3.0.0-preview-rc2"
+        - spark:  "3.0.0-preview"
           hadoop: "3.2.0"
           scala:  "2.12"
-        - spark:  "3.0.0-preview2-rc2"
+        - spark:  "3.0.0-preview2"
           hadoop: "3.2.0"
           scala:  "2.12"
     runs-on: ubuntu-latest
