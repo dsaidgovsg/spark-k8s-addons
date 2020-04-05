@@ -27,7 +27,7 @@ ARG CONDA_PREFIX=/opt/conda/default
 ENV CONDA_PREFIX="${CONDA_PREFIX}"
 
 # The conda3 version shouldn't matter much, can just take the latest
-ARG MINICONDA3_VERSION=4.7.12
+ARG MINICONDA3_VERSION="py38_4.8.2"
 
 USER root
 
