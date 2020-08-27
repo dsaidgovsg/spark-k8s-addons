@@ -1,4 +1,4 @@
-# While it might make sense to start from `guangie88/spark-k8s-py` instead,
+# While it might make sense to start from `dsaidgovsg/spark-k8s-py` instead,
 # it is easier to just COPY over from the above image just the python directory
 # to avoid having to remove pip stuff, since we are using conda here
 
@@ -8,10 +8,10 @@ ARG HADOOP_VERSION
 ARG SCALA_VERSION
 
 # For copying of pyspark + py4j only
-FROM guangie88/spark-k8s-py:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION} as pybase
+FROM dsaidgovsg/spark-k8s-py:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION} as pybase
 
 # Base image
-FROM guangie88/spark-k8s:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}
+FROM dsaidgovsg/spark-k8s:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}
 
 ARG PY4J_SRC
 
