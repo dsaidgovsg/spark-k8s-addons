@@ -50,7 +50,7 @@ jobs:
         if ! diff .github/workflows/ci.yml .github/workflows/ci.yml.backup; then echo "ci.yml.tmpl and ci.yml differs!" && exit 1; fi
     - name: Build Docker image
       run: |-
-        PY4J_SRC="$(docker run --rm -t --entrypoint sh "guangie88/spark-k8s-py:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}" -c 'ls --color=never ${SPARK_HOME}/python/lib/py4j-*.zip' | tr -d "\r\n")"
+        PY4J_SRC="$(docker run --rm -t --entrypoint sh "dsaidgovsg/spark-k8s-py:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}" -c 'ls --color=never ${SPARK_HOME}/python/lib/py4j-*.zip' | tr -d "\r\n")"
         echo "PY4J_SRC - ${PY4J_SRC}"
         TAG_NAME="${SELF_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}"
         docker build . -t "${IMAGE_NAME}:${TAG_NAME}" \
