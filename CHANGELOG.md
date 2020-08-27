@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v3
+
+- Remove `conda` and switch to multiple Python builds managed by `pyenv`.
+
 ## v2
 
 - `CONDA_PREFIX` is the default prefix to contain all `conda install` bins and

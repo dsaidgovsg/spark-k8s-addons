@@ -18,29 +18,75 @@ jobs:
         - spark:  "2.4.5"
           hadoop: "3.1.0"
           scala:  "2.11"
+          python: "3.6"
+        - spark:  "2.4.5"
+          hadoop: "3.1.0"
+          scala:  "2.11"
+          python: "3.7"
+        - spark:  "2.4.5"
+          hadoop: "3.1.0"
+          scala:  "2.11"
+          python: "3.8"
         - spark:  "2.4.5"
           hadoop: "3.1.0"
           scala:  "2.12"
+          python: "3.6"
+        - spark:  "2.4.5"
+          hadoop: "3.1.0"
+          scala:  "2.12"
+          python: "3.7"
+        - spark:  "2.4.5"
+          hadoop: "3.1.0"
+          scala:  "2.12"
+          python: "3.8"
         - spark:  "2.4.6"
           hadoop: "3.1.0"
           scala:  "2.11"
+          python: "3.6"
+        - spark:  "2.4.6"
+          hadoop: "3.1.0"
+          scala:  "2.11"
+          python: "3.7"
+        - spark:  "2.4.6"
+          hadoop: "3.1.0"
+          scala:  "2.11"
+          python: "3.8"
         - spark:  "2.4.6"
           hadoop: "3.1.0"
           scala:  "2.12"
+          python: "3.6"
+        - spark:  "2.4.6"
+          hadoop: "3.1.0"
+          scala:  "2.12"
+          python: "3.7"
+        - spark:  "2.4.6"
+          hadoop: "3.1.0"
+          scala:  "2.12"
+          python: "3.8"
         - spark:  "3.0.0"
           hadoop: "3.2.0"
           scala:  "2.12"
+          python: "3.6"
+        - spark:  "3.0.0"
+          hadoop: "3.2.0"
+          scala:  "2.12"
+          python: "3.7"
+        - spark:  "3.0.0"
+          hadoop: "3.2.0"
+          scala:  "2.12"
+          python: "3.8"
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: spark-k8s-addons
-      SELF_VERSION: "v2"
+      SELF_VERSION: "v3"
       BASE_VERSION: "v2"
       SPARK_VERSION: "${{ matrix.version.spark }}"
       HADOOP_VERSION: "${{ matrix.version.hadoop }}"
       SCALA_VERSION: "${{ matrix.version.scala }}"
+      PYTHON_VERSION: "${{ matrix.version.python }}"
     steps:
     - name: Checkout code
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2
     - name: Install tera-cli
       run: |-
         wget https://github.com/guangie88/tera-cli/releases/download/v0.4.0/tera_linux_amd64 -O /tmp/tera
@@ -54,12 +100,13 @@ jobs:
       run: |-
         PY4J_SRC="$(docker run --rm -t --entrypoint sh "dsaidgovsg/spark-k8s-py:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}" -c 'ls --color=never ${SPARK_HOME}/python/lib/py4j-*.zip' | tr -d "\r\n")"
         echo "PY4J_SRC - ${PY4J_SRC}"
-        TAG_NAME="${SELF_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}"
+        TAG_NAME="${SELF_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}_python-${PYTHON_VERSION}"
         docker build . -t "${IMAGE_NAME}:${TAG_NAME}" \
           --build-arg BASE_VERSION="${BASE_VERSION}" \
           --build-arg SPARK_VERSION="${SPARK_VERSION}" \
           --build-arg HADOOP_VERSION="${HADOOP_VERSION}" \
           --build-arg SCALA_VERSION="${SCALA_VERSION}" \
+          --build-arg PYTHON_VERSION="${PYTHON_VERSION}" \
           --build-arg PY4J_SRC="${PY4J_SRC}" \
     - name: Push Docker image
       run: bash push-images.sh

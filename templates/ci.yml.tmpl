@@ -19,9 +19,12 @@ jobs:
 {%- for spark in v.spark %}
 {%- for hadoop in v.hadoop %}
 {%- for scala in v.scala %}
+{%- for python in v.python %}
         - spark:  "{{ spark }}"
           hadoop: "{{ hadoop }}"
           scala:  "{{ scala }}"
+          python: "{{ python }}"
+{%- endfor %}
 {%- endfor %}
 {%- endfor %}
 {%- endfor %}
@@ -35,10 +38,11 @@ jobs:
       SPARK_VERSION: "${{ matrix.version.spark }}"
       HADOOP_VERSION: "${{ matrix.version.hadoop }}"
       SCALA_VERSION: "${{ matrix.version.scala }}"
+      PYTHON_VERSION: "${{ matrix.version.python }}"
       {%- endraw %}
     steps:
     - name: Checkout code
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2
     - name: Install tera-cli
       run: |-
         wget https://github.com/guangie88/tera-cli/releases/download/v0.4.0/tera_linux_amd64 -O /tmp/tera
@@ -52,12 +56,13 @@ jobs:
       run: |-
         PY4J_SRC="$(docker run --rm -t --entrypoint sh "dsaidgovsg/spark-k8s-py:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}" -c 'ls --color=never ${SPARK_HOME}/python/lib/py4j-*.zip' | tr -d "\r\n")"
         echo "PY4J_SRC - ${PY4J_SRC}"
-        TAG_NAME="${SELF_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}"
+        TAG_NAME="${SELF_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}_python-${PYTHON_VERSION}"
         docker build . -t "${IMAGE_NAME}:${TAG_NAME}" \
           --build-arg BASE_VERSION="${BASE_VERSION}" \
           --build-arg SPARK_VERSION="${SPARK_VERSION}" \
           --build-arg HADOOP_VERSION="${HADOOP_VERSION}" \
           --build-arg SCALA_VERSION="${SCALA_VERSION}" \
+          --build-arg PYTHON_VERSION="${PYTHON_VERSION}" \
           --build-arg PY4J_SRC="${PY4J_SRC}" \
     - name: Push Docker image
       run: bash push-images.sh
