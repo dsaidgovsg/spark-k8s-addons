@@ -23,22 +23,12 @@ default UID dictated by the official Spark-Kubernetes Docker image build.
 The following command-line tools have been added onto the original K8s Docker
 images:
 
-- Miniconda3 (i.e. `conda` command)
-  - This specially uses the compiled and linked variants found
-    [here](https://repo.anaconda.com/pkgs/misc/conda-execs/), so that upgrading
-    Python in deriving images will not affect `conda` command itself. This does
-    not require any preset Python version to run `conda` as a result. The set-up
-    also generally assumes to never perform `conda activate` so that the
-    deriving images do not need to worry which environment to install to.
-    However, do note that the user has to be `root` instead of `spark` to
-    install anything from `conda`. `conda install` always installs into the
-    default `conda` environment, as defined by `CONDA_PREFIX` environment
-    variable.
-- [AWS CLI](https://aws.amazon.com/cli/) installed via `conda`. Since `aws` CLI
-  requires Python, this forces a certain version of Python to be installed into
-  the default `conda` environment, but the Python version is left unspecified.
-  (Though we generally try to pick the lowest possible Python version for
-  easier Python version upgrade in deriving images).
+- [`pyenv`](https://github.com/pyenv/pyenv) to easily get the specific Python
+  major.minor version installed and be set as the global version. Every CI build
+  from this repository will cause the Python version to take the latest patch
+  version.
+- [AWS CLI](https://aws.amazon.com/cli/) installed via `pip` using the same
+  Python version set globally by `pyenv`.
 - [AWS IAM Authenticator](https://github.com/kubernetes-sigs/aws-iam-authenticator)
   This is a Go statically linked binary, so this does not interact with any of
   the above said items.
