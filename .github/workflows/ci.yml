@@ -66,4 +66,5 @@ jobs:
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        IMAGE_ORG: ${{ secrets.IMAGE_ORG }}
       if: github.event_name == 'push'

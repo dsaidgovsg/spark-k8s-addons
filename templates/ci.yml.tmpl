@@ -65,5 +65,6 @@ jobs:
         {% raw -%}
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        IMAGE_ORG: ${{ secrets.IMAGE_ORG }}
         {%- endraw %}
       if: github.event_name == 'push'
