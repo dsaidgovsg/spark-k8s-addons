@@ -24,6 +24,10 @@ ARG PYTHON_VERSION
 USER root
 SHELL ["/bin/bash", "-c"]
 
+ARG PYENV_ROOT="/opt/pyenv"
+ENV PYENV_ROOT="${PYENV_ROOT}"
+ENV PATH="${PYENV_ROOT}/bin:${PATH}"
+
 # Install curl for to get external deps
 RUN set -euo pipefail && \
     apt-get update; \
@@ -34,12 +38,13 @@ RUN set -euo pipefail && \
     rm -rf /var/lib/apt/lists/*; \
     printf '\n\
 eval "$(pyenv init -)"\n\
-eval "$(pyenv virtualenv-init -)"\n' >> /etc/bash.bashrc; \
+eval "$(pyenv virtualenv-init -)"\n' >> /root/.bashrc; \
     :
 
 # We took some of the PATH created by the above two evals since they are
-# necessary PATHs to locate python and pip for Docker build
-ENV PATH="/root/.pyenv/plugins/pyenv-virtualenv/shims:/root/.pyenv/shims:/root/.pyenv/bin:${SPARK_HOME}/bin:${PATH}"
+# necessary PATHs to locate python and pip for Docker build, and Docker RUN
+# ignores bashrc / bash profile in general.
+ENV PATH="${PYENV_ROOT}/plugins/pyenv-virtualenv/shims:${PYENV_ROOT}/shims:${SPARK_HOME}/bin:${PATH}"
 
 # Python runtime + build requirements
 RUN set -euo pipefail && \
@@ -96,6 +101,7 @@ RUN set -euo pipefail && \
     mv aws-iam-authenticator /usr/local/bin/; \
     # AWS CLI
     pip install --no-cache-dir awscli; \
+    pip check; \
     # Google Storage JAR
     curl -LO https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop2-latest.jar; \
     # MariaDB connector JAR
@@ -117,3 +123,10 @@ RUN set -euo pipefail && \
     :
 
 USER ${SPARK_USER}
+
+# https://github.com/pyenv/pyenv/issues/1157
+RUN set -euo pipefail && \
+    printf '\n\
+eval "$(pyenv init - --no-rehash)"\n\
+eval "$(pyenv virtualenv-init - --no-rehash)"\n' >> "${HOME}/.bashrc"; \
+    :
