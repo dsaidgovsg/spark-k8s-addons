@@ -1,4 +1,4 @@
-self_version: "v3"
+self_version: "v4"
 
 versions:
 - spark:  ["2.4.5", "2.4.6"]

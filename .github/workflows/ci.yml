@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: spark-k8s-addons
-      SELF_VERSION: "v3"
+      SELF_VERSION: "v4"
       BASE_VERSION: "v2"
       SPARK_VERSION: "${{ matrix.version.spark }}"
       HADOOP_VERSION: "${{ matrix.version.hadoop }}"
