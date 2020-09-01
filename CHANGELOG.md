@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v4
+
+- Remove `pyenv` and use native Python only. `pip` installation is recommended
+  to be managed by `poetry`.
+
 ## v3
 
 - Remove `conda` and switch to multiple Python builds managed by `pyenv`.

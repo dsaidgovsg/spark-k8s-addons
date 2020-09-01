@@ -11,6 +11,45 @@ The Spark K8s Docker images are built using
 Note that the images here are Debian based because of how the official script
 generates the Spark-Kubernetes images.
 
+## How to build
+
+```bash
+BASE_VERSION=v2
+SPARK_VERSION=3.0.0
+HADOOP_VERSION=3.2.0
+SCALA_VERSION=2.12
+PYTHON_VERSION=3.8
+
+docker pull dsaidgovsg/spark-k8s-py:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}
+PY4J_SRC="$(docker run --rm -t --entrypoint sh "dsaidgovsg/spark-k8s-py:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}" -c 'ls --color=never ${SPARK_HOME}/python/lib/py4j-*.zip' | tr -d "\r\n")"
+
+IMAGE_NAME=spark-k8s-addons
+docker build -t "${IMAGE_NAME}" \
+    --build-arg BASE_VERSION="${BASE_VERSION}" \
+    --build-arg SPARK_VERSION="${SPARK_VERSION}" \
+    --build-arg HADOOP_VERSION="${HADOOP_VERSION}" \
+    --build-arg SCALA_VERSION="${SCALA_VERSION}" \
+    --build-arg PYTHON_VERSION="${PYTHON_VERSION}" \
+    --build-arg PY4J_SRC="${PY4J_SRC}" \
+    .
+```
+
+## How to properly manage `pip` packages
+
+Since raw `pip` is terrible at managing installation of dependencies in a
+version compatible across multiple `pip` install sessions, `poetry` has been
+installed in a system wide manner (whose directory to contain `pyproject.toml`
+is the value of the env var `POETRY_SYSTEM_PROJECT_DIR`).
+
+All `pip` installation is recommended to go through via `poetry` completely, and
+this can be done like this:
+
+```bash
+pushd "${POETRY_SYSTEM_PROJECT_DIR}"
+poetry add <package1> [<other packages to add>]
+popd
+```
+
 ## Add-ons
 
 ### User `spark`
@@ -23,12 +62,8 @@ default UID dictated by the official Spark-Kubernetes Docker image build.
 The following command-line tools have been added onto the original K8s Docker
 images:
 
-- [`pyenv`](https://github.com/pyenv/pyenv) to easily get the specific Python
-  major.minor version installed and be set as the global version. Every CI build
-  from this repository will cause the Python version to take the latest patch
-  version.
-- [AWS CLI](https://aws.amazon.com/cli/) installed via `pip` using the same
-  Python version set globally by `pyenv`.
+- [`poetry`](https://python-poetry.org/) to properly manage pip installation
+- [AWS CLI](https://aws.amazon.com/cli/) installed via `poetry`
 - [AWS IAM Authenticator](https://github.com/kubernetes-sigs/aws-iam-authenticator)
   This is a Go statically linked binary, so this does not interact with any of
   the above said items.
