@@ -98,6 +98,8 @@ ARG SPARK_USER_UID=185
 # This will not affect the original spark-k8s set-up
 RUN set -euo pipefail && \
     adduser --disabled-password --gecos "" -u "${SPARK_USER_UID}" "${SPARK_USER}"; \
+    # Amend the work-dir, which is a scratch space for running Spark to be usable by group `spark`
+    chown root:spark "${SPARK_HOME}/work-dir"; \
     :
 
 USER ${SPARK_USER}

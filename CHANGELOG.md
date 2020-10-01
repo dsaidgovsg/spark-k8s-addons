@@ -4,6 +4,7 @@
 
 - Remove `pyenv` and use native Python only. `pip` installation is recommended
   to be managed by `poetry`.
+- Change group of `/opt/spark/work-dir` to be `spark` instead of `root`.
 
 ## v3
 
