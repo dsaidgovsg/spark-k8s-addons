@@ -100,6 +100,9 @@ RUN set -euo pipefail && \
     adduser --disabled-password --gecos "" -u "${SPARK_USER_UID}" "${SPARK_USER}"; \
     # Amend the work-dir, which is a scratch space for running Spark to be usable by group `spark`
     chown root:spark "${SPARK_HOME}/work-dir"; \
+    # And force group write for older 2.4.z versions that is contained within >= 3.y.z
+    # https://github.com/apache/spark/blob/v3.0.1/resource-managers/kubernetes/docker/src/main/dockerfiles/spark/Dockerfile#L56
+    chmod g+w "${SPARK_HOME}/work-dir"; \
     :
 
 USER ${SPARK_USER}
