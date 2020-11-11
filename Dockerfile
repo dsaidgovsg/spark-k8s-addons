@@ -22,6 +22,7 @@ FROM dsaidgovsg/spark-k8s:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSI
 ARG PY4J_SRC
 
 COPY --from=pybase "${SPARK_HOME}/python" "${SPARK_HOME}/python"
+ENV PATH="${PATH}:${SPARK_HOME}/bin"
 ENV PYTHONPATH="${SPARK_HOME}/python/lib/pyspark.zip:${PY4J_SRC}"
 
 ARG HADOOP_VERSION
@@ -33,8 +34,11 @@ SHELL ["/bin/bash", "-c"]
 # Install Python by copying over from matching Debian distribution for building
 COPY --from=python_base /usr/local /usr/local
 RUN set -euo pipefail && \
+    # Test added PATH works
+    spark-shell --version; \
+    pyspark --version; \
     # Required extra deps
-    apt-get update && apt-get install --no-install-recommends -y libexpat1 tk; \
+    apt-get update && apt-get install --no-install-recommends -y libexpat1 libreadline7 tk; \
     rm -rf /var/lib/apt/lists/*; \
     ldconfig; \
     # Test every command to return non-error status code for help
