@@ -107,6 +107,11 @@ RUN set -euo pipefail && \
     # And force group write for older 2.4.z versions that is contained within >= 3.y.z
     # https://github.com/apache/spark/blob/v3.0.1/resource-managers/kubernetes/docker/src/main/dockerfiles/spark/Dockerfile#L56
     chmod g+w "${SPARK_HOME}/work-dir"; \
+    # Also create the default SPARK_LOG_DIR and usable as 'spark' user in case the image is used in
+    # non-k8s settings and tries to create and write into this dir
+    mkdir -p "${SPARK_HOME}/logs"; \
+    chown root:spark "${SPARK_HOME}/logs"; \
+    chmod g+w "${SPARK_HOME}/logs"; \
     :
 
 USER ${SPARK_USER}
