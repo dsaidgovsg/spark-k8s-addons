@@ -2,6 +2,8 @@
 
 ## v4
 
+- Add support up to 3.1.1 for Spark 3.y.z.
+- Drop 2.4.5 and 2.4.6 and only support 2.4.7 as the last supported 2.4.z version.
 - Remove `pyenv` and use native Python only. `pip` installation is recommended
   to be managed by `poetry`.
 - Change group of `/opt/spark/work-dir` to be `spark` instead of `root`.
