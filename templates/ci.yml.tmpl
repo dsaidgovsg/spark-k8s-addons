@@ -29,7 +29,7 @@ jobs:
 {%- endfor %}
 {%- endfor %}
 {%- endfor %}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     env:
       IMAGE_NAME: spark-k8s-addons
       SELF_VERSION: "{{ self_version }}"
@@ -41,6 +41,11 @@ jobs:
       PYTHON_VERSION: "${{ matrix.version.python }}"
       {%- endraw %}
     steps:
+    - name: Set up Java
+      uses: actions/setup-java@v2
+      with:
+        distribution: adopt
+        java-version: '8'
     - name: Checkout code
       uses: actions/checkout@v2
     - name: Install tera-cli
