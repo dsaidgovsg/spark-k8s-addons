@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v5
+
+- Build only for 2.4.8, 3.0.3 and 3.1.2, and their related supported Hadoop 2.7 variants.
+- Change base image version to `v3`.
+
 ## v4
 
 - Add support up to 3.1.1 for Spark 3.y.z.

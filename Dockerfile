@@ -1,8 +1,9 @@
 # Current k8s built image is always Debian buster based
-ARG BASE_VERSION="v2"
+ARG BASE_VERSION="v3"
 ARG SPARK_VERSION
 ARG HADOOP_VERSION
 ARG SCALA_VERSION
+ARG JAVA_VERSION
 ARG PYTHON_VERSION
 ARG DEBIAN_DIST=buster
 
@@ -14,11 +15,10 @@ FROM python:${PYTHON_VERSION}-${DEBIAN_DIST} as python_base
 # to avoid having to remove pip stuff, since we are using conda here
 
 # For copying of pyspark + py4j only
-FROM dsaidgovsg/spark-k8s-py:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION} as pybase
+FROM dsaidgovsg/spark-k8s-py:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}_java-${JAVA_VERSION} as pybase
 
 # Base image
-FROM dsaidgovsg/spark-k8s:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}
-
+FROM dsaidgovsg/spark-k8s:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}_java-${JAVA_VERSION}
 ARG PY4J_SRC
 
 COPY --from=pybase "${SPARK_HOME}/python" "${SPARK_HOME}/python"
@@ -75,7 +75,19 @@ RUN set -euo pipefail && \
     AWS_JAVA_SDK_VERSION="$(curl -L https://raw.githubusercontent.com/apache/hadoop/branch-${HADOOP_VERSION}/hadoop-project/pom.xml | grep -A1 aws-java-sdk | grep -oE "[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+" | tr "\r\n" " " | cut -d " " -f 1)"; \
     ## Download the JAR
     curl -LO https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/${HADOOP_VERSION}/hadoop-aws-${HADOOP_VERSION}.jar; \
-    curl -LO https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/${AWS_JAVA_SDK_VERSION}/aws-java-sdk-bundle-${AWS_JAVA_SDK_VERSION}.jar; \
+    HADOOP_MAJOR_VERSION="$(echo "${HADOOP_VERSION}" | cut -d '.' -f1)"; \
+    if [[ ${HADOOP_MAJOR_VERSION} -lt 3 ]]; then \
+        # Version of AWS_JAVA_SDK_VERSION is expected out of range for the bundled build
+        # So fetch the original non-bundled build
+        # Only ion-java is missing from the bundle:
+        # https://github.com/aws/aws-sdk-java/blob/1.11.375/aws-java-sdk-bundle/pom.xml
+        # So just download the latest version for it
+        ION_JAVA_VERSION=1.5.1; \
+        curl -LO https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk/${AWS_JAVA_SDK_VERSION}/aws-java-sdk-${AWS_JAVA_SDK_VERSION}.jar; \
+        curl -LO https://repo1.maven.org/maven2/software/amazon/ion/ion-java/${ION_JAVA_VERSION}/ion-java-${ION_JAVA_VERSION}.jar; \
+    else \
+        curl -LO https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/${AWS_JAVA_SDK_VERSION}/aws-java-sdk-bundle-${AWS_JAVA_SDK_VERSION}.jar; \
+    fi; \
     # AWS IAM Authenticator
     curl -LO https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/aws-iam-authenticator; \
     chmod +x aws-iam-authenticator; \

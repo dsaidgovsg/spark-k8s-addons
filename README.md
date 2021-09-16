@@ -14,19 +14,21 @@ generates the Spark-Kubernetes images.
 ## How to build
 
 ```bash
-BASE_VERSION=v2
-SPARK_VERSION=3.1.1
+BASE_VERSION=v3
+SPARK_VERSION=3.1.2
+JAVA_VERSION=11
 HADOOP_VERSION=3.2.0
 SCALA_VERSION=2.12
 PYTHON_VERSION=3.8
 
-docker pull dsaidgovsg/spark-k8s-py:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}
-PY4J_SRC="$(docker run --rm -t --entrypoint sh "dsaidgovsg/spark-k8s-py:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}" -c 'ls --color=never ${SPARK_HOME}/python/lib/py4j-*.zip' | tr -d "\r\n")"
+docker pull dsaidgovsg/spark-k8s-py:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}_java-${JAVA_VERSION}
+PY4J_SRC="$(docker run --rm -t --entrypoint sh "dsaidgovsg/spark-k8s-py:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}_java-${JAVA_VERSION}" -c 'ls --color=never ${SPARK_HOME}/python/lib/py4j-*.zip' | tr -d "\r\n")"
 
 IMAGE_NAME=spark-k8s-addons
 docker build -t "${IMAGE_NAME}" \
     --build-arg BASE_VERSION="${BASE_VERSION}" \
     --build-arg SPARK_VERSION="${SPARK_VERSION}" \
+    --build-arg JAVA_VERSION="${JAVA_VERSION}" \
     --build-arg HADOOP_VERSION="${HADOOP_VERSION}" \
     --build-arg SCALA_VERSION="${SCALA_VERSION}" \
     --build-arg PYTHON_VERSION="${PYTHON_VERSION}" \
