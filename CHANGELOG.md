@@ -2,13 +2,15 @@
 
 ## v5
 
-- Build only for 2.4.8, 3.0.3 and 3.1.2, and their related supported Hadoop 2.7 variants.
+- Build only for 3.0.3, 3.1.3 and 3.2.1, and their related supported Hadoop
+  variants (dropped 2.4.8).
 - Change base image version to `v3`.
 
 ## v4
 
 - Add support up to 3.1.1 for Spark 3.y.z.
-- Drop 2.4.5 and 2.4.6 and only support 2.4.7 as the last supported 2.4.z version.
+- Drop 2.4.5 and 2.4.6 and only support 2.4.7 as the last supported
+  2.4.z version.
 - Remove `pyenv` and use native Python only. `pip` installation is recommended
   to be managed by `poetry`.
 - Change group of `/opt/spark/work-dir` to be `spark` instead of `root`.
