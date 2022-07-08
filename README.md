@@ -15,11 +15,11 @@ generates the Spark-Kubernetes images.
 
 ```bash
 BASE_VERSION=v3
-SPARK_VERSION=3.2.1
+SPARK_VERSION=3.3.0
 JAVA_VERSION=11
-HADOOP_VERSION=3.3.1
+HADOOP_VERSION=3.3.2
 SCALA_VERSION=2.13
-PYTHON_VERSION=3.8
+PYTHON_VERSION=3.9
 
 docker pull dsaidgovsg/spark-k8s-py:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}_java-${JAVA_VERSION}
 PY4J_SRC="$(docker run --rm -t --entrypoint sh "dsaidgovsg/spark-k8s-py:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}_java-${JAVA_VERSION}" -c 'ls --color=never ${SPARK_HOME}/python/lib/py4j-*.zip' | tr -d "\r\n")"
