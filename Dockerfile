@@ -19,11 +19,10 @@ FROM dsaidgovsg/spark-k8s-py:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VE
 
 # Base image
 FROM dsaidgovsg/spark-k8s:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}_java-${JAVA_VERSION}
-ARG PY4J_SRC
 
 COPY --from=pybase "${SPARK_HOME}/python" "${SPARK_HOME}/python"
 ENV PATH="${PATH}:${SPARK_HOME}/bin"
-ENV PYTHONPATH="${SPARK_HOME}/python/lib/pyspark.zip:${PY4J_SRC}"
+ENV PYTHONPATH="${SPARK_HOME}/python/lib/pyspark.zip:${SPARK_HOME}/python/lib/py4j.zip"
 
 ARG HADOOP_VERSION
 ARG PYTHON_VERSION
@@ -34,6 +33,8 @@ SHELL ["/bin/bash", "-c"]
 # Install Python by copying over from matching Debian distribution for building
 COPY --from=python_base /usr/local /usr/local
 RUN set -euo pipefail && \
+    # Ensure constant path for py4j for env purposes
+    ln -rs /opt/spark/python/lib/py4j-*.zip /opt/spark/python/lib/py4j.zip; \
     # Test added PATH works
     spark-shell --version; \
     pyspark --version; \
@@ -45,6 +46,8 @@ RUN set -euo pipefail && \
     find /usr/local/bin -type f -perm /u=x,g=x,o=x -print0 | xargs -0 -I {} bash -c "{} --help || {} -h" >/dev/null 2>&1; \
     # Test python works and can be found in PATH
     python --version; \
+    # Test PYTHONPATH libraries works
+    python -c "import pyspark, py4j"; \
     :
 
 # Install curl for to get external deps
