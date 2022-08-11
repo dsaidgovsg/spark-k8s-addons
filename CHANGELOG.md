@@ -3,7 +3,7 @@
 ## v5
 
 - Use non-versioned constant path for `py4j import.
-- Build only for 3.1.3, 3.2.1 and 3.3.0, and their related supported Hadoop
+- Build only for 3.1.3, 3.2.2 and 3.3.0, and their related supported Hadoop
   variants (dropped all 2.y.z versions).
 - Change base image version to `v3`.
 
