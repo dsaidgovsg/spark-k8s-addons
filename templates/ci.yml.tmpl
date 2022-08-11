@@ -22,9 +22,9 @@ jobs:
 {%- for scala in v.scala %}
 {%- for python in v.python %}
         - spark:  "{{ spark }}"
-          java:   "{{ java }}"
           hadoop: "{{ hadoop }}"
           scala:  "{{ scala }}"
+          java:   "{{ java }}"
           python: "{{ python }}"
 {%- endfor %}
 {%- endfor %}
@@ -39,9 +39,9 @@ jobs:
       BASE_VERSION: "{{ base_version }}"
       {% raw -%}
       SPARK_VERSION: "${{ matrix.version.spark }}"
-      JAVA_VERSION: "${{ matrix.version.java }}"
       HADOOP_VERSION: "${{ matrix.version.hadoop }}"
       SCALA_VERSION: "${{ matrix.version.scala }}"
+      JAVA_VERSION: "${{ matrix.version.java }}"
       PYTHON_VERSION: "${{ matrix.version.python }}"
       {%- endraw %}
     steps:
