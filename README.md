@@ -105,3 +105,9 @@ Otherwise, you will need `cargo`, which can be installed via
 [rustup](https://rustup.rs/).
 
 Once `cargo` is installed, simply run `cargo install tera-cli --version=^0.4.0`.
+
+Always make changes in `templates/ci.yml.tmpl` since the template will be
+applied onto `.github/workflows/ci.yml`.
+
+Run `templates/apply-vars.sh` to apply the template once `tera-cli` has been
+installed.

@@ -62,7 +62,7 @@ ENV POETRY_HOME=/opt/poetry
 ENV POETRY_SYSTEM_PROJECT_DIR="${POETRY_HOME}/.system"
 ENV PATH="${POETRY_HOME}/bin:${PATH}"
 RUN set -euo pipefail && \
-    curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python; \
+    curl -sSL https://install.python-poetry.org | python3 -; \
     poetry --version; \
     mkdir -p "${POETRY_SYSTEM_PROJECT_DIR}"; \
     cd "${POETRY_SYSTEM_PROJECT_DIR}"; \
