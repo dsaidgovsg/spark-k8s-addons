@@ -70,11 +70,11 @@ ENV POETRY_SYSTEM_PROJECT_DIR="${POETRY_HOME}/.system"
 ENV PATH="${POETRY_HOME}/bin:${PATH}"
 RUN set -euo pipefail && \
     curl -sSL https://install.python-poetry.org | python3 -; \
-    $POETRY_HOME/bin/poetry --version; \
+    poetry --version; \
     mkdir -p "${POETRY_SYSTEM_PROJECT_DIR}"; \
     cd "${POETRY_SYSTEM_PROJECT_DIR}"; \
-    $POETRY_HOME/bin/poetry init -n --name system; \
-    $POETRY_HOME/bin/poetry config virtualenvs.create false; \
+    poetry init -n --name system; \
+    poetry config virtualenvs.create false; \
     :
 
 RUN set -euo pipefail && \
@@ -104,7 +104,7 @@ RUN set -euo pipefail && \
     mv aws-iam-authenticator /usr/local/bin/; \
     # AWS CLI
     pushd "${POETRY_SYSTEM_PROJECT_DIR}"; \
-    $POETRY_HOME/bin/poetry add awscli; \
+    poetry add awscli; \
     popd; \
     # Google Storage JAR
     curl -LO https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop2-latest.jar; \
