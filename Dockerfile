@@ -65,7 +65,6 @@ RUN set -euo pipefail && \
 
 # Set up poetry to do proper global pip dependency management
 ENV POETRY_HOME=/opt/poetry
-ENV POETRY_VIRTUALENVS_CREATE=false
 ENV POETRY_SYSTEM_PROJECT_DIR="${POETRY_HOME}/.system"
 ENV PATH="${POETRY_HOME}/bin:${PATH}"
 RUN set -euo pipefail && \

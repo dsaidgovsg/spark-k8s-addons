@@ -8,7 +8,7 @@ K8s Docker images.
 The Spark K8s Docker images are built using
 [this repository](https://github.com/dsaidgovsg/spark-k8s).
 
-Note that the images for Spark version below 3.4.0 here are Debian based because of how the official script generates the Spark-Kubernetes images. For Spark version above 3.4.0, Ubuntu base images are generated instead based on the official script. 
+Note that the images for Spark version below 3.4.0 here are Debian based because of how the official script generates the Spark-Kubernetes images. For Spark version above 3.4.0, Ubuntu-based images are generated instead based on the official script. 
 
 ## How to build
 
