@@ -5,10 +5,10 @@ ARG HADOOP_VERSION
 ARG SCALA_VERSION
 ARG JAVA_VERSION
 ARG PYTHON_VERSION
-ARG DEBIAN_DIST=buster
+ARG IMAGE_VERSION
 
 # For copying over of Python set-up
-FROM python:${PYTHON_VERSION}-${DEBIAN_DIST} as python_base
+FROM python:${PYTHON_VERSION}${IMAGE_VERSION} as python_base
 
 # While it might make sense to start from `dsaidgovsg/spark-k8s-py` instead,
 # it is easier to just COPY over from the above image just the python directory
@@ -26,6 +26,7 @@ ENV PYTHONPATH="${SPARK_HOME}/python/lib/pyspark.zip:${SPARK_HOME}/python/lib/py
 
 ARG HADOOP_VERSION
 ARG PYTHON_VERSION
+ARG IMAGE_VERSION
 
 USER root
 SHELL ["/bin/bash", "-c"]
@@ -39,7 +40,12 @@ RUN set -euo pipefail && \
     spark-shell --version; \
     pyspark --version; \
     # Required extra deps
-    apt-get update && apt-get install --no-install-recommends -y libexpat1 libreadline7 tk; \
+    if [ "${IMAGE_VERSION}" = "-buster" ]; then \
+        export LIBREADLINE_VERSION=7 ; \
+    else \
+        export LIBREADLINE_VERSION=8 ; \
+    fi ; \
+    apt-get update && apt-get install --no-install-recommends -y libexpat1 libreadline"${LIBREADLINE_VERSION}" tk; \
     rm -rf /var/lib/apt/lists/*; \
     ldconfig; \
     # Test every command to return non-error status code for help

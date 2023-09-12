@@ -21,11 +21,14 @@ jobs:
 {%- for hadoop in v.hadoop %}
 {%- for scala in v.scala %}
 {%- for python in v.python %}
+{%- for image in v.image %}
         - spark:  "{{ spark }}"
           hadoop: "{{ hadoop }}"
           scala:  "{{ scala }}"
           java:   "{{ java }}"
           python: "{{ python }}"
+          image: "{{ image }}"
+{%- endfor %}
 {%- endfor %}
 {%- endfor %}
 {%- endfor %}
@@ -43,6 +46,7 @@ jobs:
       SCALA_VERSION: "${{ matrix.version.scala }}"
       JAVA_VERSION: "${{ matrix.version.java }}"
       PYTHON_VERSION: "${{ matrix.version.python }}"
+      IMAGE_VERSION: "${{ matrix.version.image }}"
       {%- endraw %}
     steps:
     - name: Set up Java
@@ -72,7 +76,8 @@ jobs:
           --build-arg JAVA_VERSION="${JAVA_VERSION}" \
           --build-arg HADOOP_VERSION="${HADOOP_VERSION}" \
           --build-arg SCALA_VERSION="${SCALA_VERSION}" \
-          --build-arg PYTHON_VERSION="${PYTHON_VERSION}"
+          --build-arg PYTHON_VERSION="${PYTHON_VERSION}" \
+          --build-arg IMAGE_VERSION="${IMAGE_VERSION}"
     - name: Push Docker image
       run: bash push-images.sh
       env:
