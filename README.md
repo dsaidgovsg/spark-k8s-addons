@@ -8,18 +8,18 @@ K8s Docker images.
 The Spark K8s Docker images are built using
 [this repository](https://github.com/dsaidgovsg/spark-k8s).
 
-Note that the images here are Debian based because of how the official script
-generates the Spark-Kubernetes images.
+Note that the images for Spark version below 3.4.0 here are Debian based because of how the official script generates the Spark-Kubernetes images. For Spark version above 3.4.0, Ubuntu-based images are generated instead based on the official script. 
 
 ## How to build
 
 ```bash
 BASE_VERSION=v3
-SPARK_VERSION=3.3.0
+SPARK_VERSION=3.4.1
 JAVA_VERSION=11
-HADOOP_VERSION=3.3.2
+HADOOP_VERSION=3.3.4
 SCALA_VERSION=2.13
 PYTHON_VERSION=3.9
+IMAGE_VERSION=""
 
 docker pull dsaidgovsg/spark-k8s-py:${BASE_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}_java-${JAVA_VERSION}
 
@@ -31,6 +31,7 @@ docker build -t "${IMAGE_NAME}" \
     --build-arg HADOOP_VERSION="${HADOOP_VERSION}" \
     --build-arg SCALA_VERSION="${SCALA_VERSION}" \
     --build-arg PYTHON_VERSION="${PYTHON_VERSION}" \
+    --build-arg IMAGE_VERSION="${IMAGE_VERSION}" \
     .
 ```
 
