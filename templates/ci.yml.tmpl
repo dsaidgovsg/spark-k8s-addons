@@ -69,7 +69,7 @@ jobs:
         if ! diff .github/workflows/ci.yml .github/workflows/ci.yml.backup; then echo "ci.yml.tmpl and ci.yml differs!" && exit 1; fi
     - name: Build Docker image
       run: |-
-        TAG_NAME="${SELF_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}_java-${JAVA_VERSION}_python-${PYTHON_VERSION}"
+        TAG_NAME="test_${SELF_VERSION}_${SPARK_VERSION}_hadoop-${HADOOP_VERSION}_scala-${SCALA_VERSION}_java-${JAVA_VERSION}_python-${PYTHON_VERSION}"
         docker build . -t "${IMAGE_NAME}:${TAG_NAME}" \
           --build-arg BASE_VERSION="${BASE_VERSION}" \
           --build-arg SPARK_VERSION="${SPARK_VERSION}" \
