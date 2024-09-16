@@ -403,7 +403,7 @@ jobs:
     env:
       IMAGE_NAME: spark-k8s-addons
       SELF_VERSION: "v5"
-      BASE_VERSION: "v3"
+      BASE_VERSION: "v4"
       SPARK_VERSION: "${{ matrix.version.spark }}"
       HADOOP_VERSION: "${{ matrix.version.hadoop }}"
       SCALA_VERSION: "${{ matrix.version.scala }}"
